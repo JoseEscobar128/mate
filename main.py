@@ -50,6 +50,7 @@ class NumericalMethodsApp:
         self.result_table.pack()
 
     def show_inputs(self, event):
+        self.clear_results()
         for widget in self.inputs_frame.winfo_children():
             widget.destroy()
 
