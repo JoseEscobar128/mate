@@ -122,18 +122,43 @@ class NumericalMethodsApp:
             h = float(self.entries["h"].get())
             n = int(self.entries["n"].get())
             func_str = self.entries["Función"].get()
-            
+
             x, y = sp.symbols('x y')
             f = sp.sympify(func_str)
-            
+
             for i in range(n):
                 k1 = f.subs([(x, x0), (y, y0)])
                 k2 = f.subs([(x, x0 + h), (y, y0 + h * k1)])
-                y0 = y0 + (h / 2) * (k1 + k2)
-                x0 = x0 + h
-                self.result_table.insert("", "end", values=(i, x0, y0))
+                y_next = y0 + (h / 2) * (k1 + k2)
+                x_next = x0 + h
+                f_val = f.subs([(x, x0), (y, y0)])
+                self.result_table.insert("", "end", values=(i, x_next, y_next, k1, k2, f_val))
+                x0 = x_next
+                y0 = y_next
+            self.result_table.configure(columns=("Iteración", "x", "y", "k1", "k2", "f(x,y)"))
+            self.result_table.heading("k1", text="k1")
+            self.result_table.heading("k2", text="k2")
+            self.result_table.heading("f(x,y)", text="f(x,y)")
         except Exception as e:
             messagebox.showerror("Error", f"Error en el cálculo: {e}")
+            try:
+                x0 = float(self.entries["x0"].get())
+                y0 = float(self.entries["y0"].get())
+                h = float(self.entries["h"].get())
+                n = int(self.entries["n"].get())
+                func_str = self.entries["Función"].get()
+                
+                x, y = sp.symbols('x y')
+                f = sp.sympify(func_str)
+                
+                for i in range(n):
+                    k1 = f.subs([(x, x0), (y, y0)])
+                    k2 = f.subs([(x, x0 + h), (y, y0 + h * k1)])
+                    y0 = y0 + (h / 2) * (k1 + k2)
+                    x0 = x0 + h
+                    self.result_table.insert("", "end", values=(i, x0, y0))
+            except Exception as e:
+                messagebox.showerror("Error", f"Error en el cálculo: {e}")
 
     def runge_kutta_4(self):
         try:
@@ -142,21 +167,94 @@ class NumericalMethodsApp:
             h = float(self.entries["h"].get())
             n = int(self.entries["n"].get())
             func_str = self.entries["Función"].get()
-            
+
             x, y = sp.symbols('x y')
             f = sp.sympify(func_str)
-            
+
             for i in range(n):
                 k1 = f.subs([(x, x0), (y, y0)])
                 k2 = f.subs([(x, x0 + h/2), (y, y0 + h/2 * k1)])
                 k3 = f.subs([(x, x0 + h/2), (y, y0 + h/2 * k2)])
                 k4 = f.subs([(x, x0 + h), (y, y0 + h * k3)])
-                y0 = y0 + (h / 6) * (k1 + 2*k2 + 2*k3 + k4)
-                x0 = x0 + h
-                self.result_table.insert("", "end", values=(i, x0, y0))
+                y_next = y0 + (h / 6) * (k1 + 2*k2 + 2*k3 + k4)
+                x_next = x0 + h
+                f_val = f.subs([(x, x0), (y, y0)])
+                self.result_table.insert("", "end", values=(i, x_next, y_next, k1, k2, k3, k4, f_val))
+                x0 = x_next
+                y0 = y_next
+            self.result_table.configure(columns=("Iteración", "x", "y", "k1", "k2", "k3", "k4", "f(x,y)"))
+            self.result_table.heading("k1", text="k1")
+            self.result_table.heading("k2", text="k2")
+            self.result_table.heading("k3", text="k3")
+            self.result_table.heading("k4", text="k4")
+            self.result_table.heading("f(x,y)", text="f(x,y)")
         except Exception as e:
             messagebox.showerror("Error", f"Error en el cálculo: {e}")
+            try:
+                x0 = float(self.entries["x0"].get())
+                y0 = float(self.entries["y0"].get())
+                h = float(self.entries["h"].get())
+                n = int(self.entries["n"].get())
+                func_str = self.entries["Función"].get()
+                
+                x, y = sp.symbols('x y')
+                f = sp.sympify(func_str)
+                
+                for i in range(n):
+                    k1 = f.subs([(x, x0), (y, y0)])
+                    k2 = f.subs([(x, x0 + h/2), (y, y0 + h/2 * k1)])
+                    k3 = f.subs([(x, x0 + h/2), (y, y0 + h/2 * k2)])
+                    k4 = f.subs([(x, x0 + h), (y, y0 + h * k3)])
+                    y0 = y0 + (h / 6) * (k1 + 2*k2 + 2*k3 + k4)
+                    x0 = x0 + h
+                    self.result_table.insert("", "end", values=(i, x0, y0))
+            except Exception as e:
+                messagebox.showerror("Error", f"Error en el cálculo: {e}")
+    
     def newton_raphson(self):
+        try:
+            x0 = float(self.entries["x0"].get())
+            tol = float(self.entries["Tolerancia"].get())
+            max_iter = int(self.entries["Iteraciones"].get())
+            func_str = self.entries["Función"].get()
+            deriv_str = self.entries["Derivada"].get()
+
+            x = sp.symbols('x')
+            f = sp.sympify(func_str)
+            f_prime = sp.sympify(deriv_str)
+
+            self.result_table.configure(columns=("Iteración", "x_i", "f(x)", "f'(x)", "Error"))
+            self.result_table.heading("Iteración", text="Iteración")
+            self.result_table.heading("x_i", text="x_i")
+            self.result_table.heading("f(x)", text="f(x)")
+            self.result_table.heading("f'(x)", text="f'(x)")
+            self.result_table.heading("Error", text="Error")
+
+            error = float('inf')
+            iter_count = 0
+
+            while error > tol and iter_count < max_iter:
+                fx = f.subs(x, x0)
+                fpx = f_prime.subs(x, x0)
+
+                if fpx == 0:
+                    messagebox.showerror("Error", "La derivada se anuló, no se puede continuar.")
+                    return
+
+                x_next = x0 - fx / fpx
+                error = abs(x_next - x0)
+
+                self.result_table.insert("", "end", values=(iter_count, x0, fx, fpx, error))
+
+                x0 = x_next
+                iter_count += 1
+
+            if iter_count == max_iter:
+                messagebox.showwarning("Aviso", "Se alcanzó el número máximo de iteraciones sin convergencia.")
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Error en el cálculo: {e}")
+
         try:
             x0 = float(self.entries["x0"].get())
             tol = float(self.entries["Tolerancia"].get())
@@ -172,29 +270,28 @@ class NumericalMethodsApp:
                 fx0 = f.subs(x, x0)
                 dfx0 = df.subs(x, x0)
 
-                # Evitar divisiones por valores demasiado pequeños
                 if abs(dfx0) < 1e-10:
                     messagebox.showerror("Error", f"Derivada muy pequeña en x = {x0}, posible división por cero.")
                     return
 
                 x1 = x0 - fx0 / dfx0
+                error = abs(x1 - x0)
+                self.result_table.insert("", "end", values=(i, x1, fx0, dfx0, error))
 
-                # Mostrar datos en la tabla
-                self.result_table.insert("", "end", values=(i, x1, fx0))
-
-                # Criterio de parada usando la diferencia y la función evaluada
                 if abs(x1 - x0) < tol and abs(f.subs(x, x1)) < tol:
-                    self.result_table.insert("", "end", values=(i+1, x1, "Raíz encontrada"))
+                    self.result_table.insert("", "end", values=(i+1, x1, "Raíz encontrada", df.subs(x,x1), 0))
                     messagebox.showinfo("Resultado", f"Raíz encontrada: {x1}")
                     return
 
                 x0 = x1
-
+            self.result_table.configure(columns=("Iteración", "x", "f(x)", "f'(x)", "Error"))
+            self.result_table.heading("f(x)", text="f(x)")
+            self.result_table.heading("f'(x)", text="f'(x)")
+            self.result_table.heading("Error", text="Error")
             messagebox.showwarning("Atención", "Se alcanzó el número máximo de iteraciones sin convergencia.")
-        
+
         except Exception as e:
             messagebox.showerror("Error", f"Error en el cálculo: {e}")
-
             try:
                 x0 = float(self.entries["x0"].get())
                 tol = float(self.entries["Tolerancia"].get())
@@ -209,17 +306,55 @@ class NumericalMethodsApp:
                 for i in range(max_iter):
                     fx0 = f.subs(x, x0)
                     dfx0 = df.subs(x, x0)
-                    if dfx0 == 0:
-                        messagebox.showerror("Error", "Derivada cero, no se puede continuar")
+
+                    # Evitar divisiones por valores demasiado pequeños
+                    if abs(dfx0) < 1e-10:
+                        messagebox.showerror("Error", f"Derivada muy pequeña en x = {x0}, posible división por cero.")
                         return
+
                     x1 = x0 - fx0 / dfx0
+
+                    # Mostrar datos en la tabla
                     self.result_table.insert("", "end", values=(i, x1, fx0))
-                    if abs(x1 - x0) < tol:
+
+                    # Criterio de parada usando la diferencia y la función evaluada
+                    if abs(x1 - x0) < tol and abs(f.subs(x, x1)) < tol:
+                        self.result_table.insert("", "end", values=(i+1, x1, "Raíz encontrada"))
                         messagebox.showinfo("Resultado", f"Raíz encontrada: {x1}")
                         return
+
                     x0 = x1
+
+                messagebox.showwarning("Atención", "Se alcanzó el número máximo de iteraciones sin convergencia.")
+            
             except Exception as e:
                 messagebox.showerror("Error", f"Error en el cálculo: {e}")
+
+                try:
+                    x0 = float(self.entries["x0"].get())
+                    tol = float(self.entries["Tolerancia"].get())
+                    max_iter = int(self.entries["Iteraciones"].get())
+                    func_str = self.entries["Función"].get()
+                    deriv_str = self.entries["Derivada"].get()
+
+                    x = sp.Symbol('x')
+                    f = sp.sympify(func_str)
+                    df = sp.sympify(deriv_str)
+
+                    for i in range(max_iter):
+                        fx0 = f.subs(x, x0)
+                        dfx0 = df.subs(x, x0)
+                        if dfx0 == 0:
+                            messagebox.showerror("Error", "Derivada cero, no se puede continuar")
+                            return
+                        x1 = x0 - fx0 / dfx0
+                        self.result_table.insert("", "end", values=(i, x1, fx0))
+                        if abs(x1 - x0) < tol:
+                            messagebox.showinfo("Resultado", f"Raíz encontrada: {x1}")
+                            return
+                        x0 = x1
+                except Exception as e:
+                    messagebox.showerror("Error", f"Error en el cálculo: {e}")
 
 if __name__ == "__main__":
     root = tk.Tk()
